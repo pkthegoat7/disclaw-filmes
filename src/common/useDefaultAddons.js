@@ -10,6 +10,7 @@ const useProfile = require('stremio/common/useProfile');
 const DEFAULT_ADDONS = [
     'https://7a82163c306e-stremio-netflix-catalog-addon.baby-beamup.club/manifest.json',
     'https://torrentio.strem.fun/language=portuguese/manifest.json',
+    'https://27a5b2bfe3c0-stremio-brazilian-addon.baby-beamup.club/manifest.json',
 ];
 
 // Keyed per account, not per browser. Logging in swaps the whole addon
@@ -17,6 +18,29 @@ const DEFAULT_ADDONS = [
 // would let the defaults apply to the anonymous profile and never to the
 // account the user actually watches on.
 const seededKey = (profile) => `disclaw.addonsSeeded:${profile.auth?.user?._id ?? 'anonymous'}`;
+
+// The marker records which URLs were seeded rather than a plain "done", so
+// growing DEFAULT_ADDONS reaches accounts seeded by an earlier version while
+// an addon the user removed on purpose is still never pushed back.
+// Markers written before this were a bare 'true', and only ever by versions
+// whose defaults were exactly these two.
+const LEGACY_SEEDED = [
+    'https://7a82163c306e-stremio-netflix-catalog-addon.baby-beamup.club/manifest.json',
+    'https://torrentio.strem.fun/language=portuguese/manifest.json',
+];
+
+const readSeeded = (key) => {
+    const stored = window.localStorage.getItem(key);
+    if (stored === null) return [];
+    if (stored === 'true') return LEGACY_SEEDED;
+
+    try {
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+};
 
 const install = (core, transportUrl, manifest) => {
     core.transport.dispatch({
@@ -52,12 +76,17 @@ const useDefaultAddons = () => {
 
     React.useEffect(() => {
         if (!Array.isArray(profile.addons) || seeding.current) return;
-        if (window.localStorage.getItem(key)) return;
+
+        const seeded = readSeeded(key);
+        const pending = DEFAULT_ADDONS.filter((transportUrl) => !seeded.includes(transportUrl));
+        if (pending.length === 0) return;
+
+        const done = () => window.localStorage.setItem(key, JSON.stringify(DEFAULT_ADDONS));
 
         const installed = profile.addons.map(({ transportUrl }) => transportUrl);
-        const missing = DEFAULT_ADDONS.filter((transportUrl) => !installed.includes(transportUrl));
+        const missing = pending.filter((transportUrl) => !installed.includes(transportUrl));
         if (missing.length === 0) {
-            window.localStorage.setItem(key, 'true');
+            done();
             return;
         }
 
@@ -67,7 +96,7 @@ const useDefaultAddons = () => {
                 .then((response) => response.json())
                 .then((manifest) => install(core, transportUrl, manifest))
         ))
-            .then(() => window.localStorage.setItem(key, 'true'))
+            .then(done)
             .catch((error) => console.error('Failed to install default addons:', error))
             .then(() => {
                 seeding.current = false;
