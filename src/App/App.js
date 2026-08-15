@@ -7,7 +7,7 @@ const { useNavigate } = require('react-router');
 const { useCore } = require('stremio/core');
 const { Routes } = require('stremio-router');
 const { Chromecast, ServicesProvider, GamepadProvider } = require('stremio/services');
-const { FullscreenProvider, ToastProvider, TooltipProvider, ShortcutsProvider, DiscordProvider, CONSTANTS, DEFAULT_LANGUAGE, LANGUAGE_SEEDED_KEY, useBinaryState, useProfile, useSettings, withCoreSuspender, onFileDrop, usePlatform } = require('stremio/common');
+const { FullscreenProvider, ToastProvider, TooltipProvider, ShortcutsProvider, DiscordProvider, CONSTANTS, DEFAULT_LANGUAGE, LANGUAGE_SEEDED_KEY, useBinaryState, useDefaultAddons, useProfile, useSettings, withCoreSuspender, onFileDrop, usePlatform } = require('stremio/common');
 const ServicesToaster = require('./ServicesToaster');
 const SearchParamsHandler = require('./SearchParamsHandler');
 const DeepLinkHandler = require('./DeepLinkHandler');
@@ -26,6 +26,7 @@ const App = () => {
     const { shell } = usePlatform();
     const [, updateSettings] = useSettings();
     const navigate = useNavigate();
+    useDefaultAddons();
     const [gamepadSupportEnabled, setGamepadSupportEnabled] = React.useState(false);
     const services = React.useMemo(() => {
         return {

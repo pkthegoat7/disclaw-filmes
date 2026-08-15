@@ -22,6 +22,7 @@ const useLiveRef = require('./useLiveRef');
 const useModelState = require('./useModelState');
 const useNotifications = require('./useNotifications');
 const useOnScrollToBottom = require('./useOnScrollToBottom');
+const useDefaultAddons = require('./useDefaultAddons');
 const useProfile = require('./useProfile');
 const { default: useRouteFocused } = require('./useRouteFocused');
 const { default: useSettings } = require('./useSettings');
@@ -74,6 +75,7 @@ module.exports = {
     useModelState,
     useNotifications,
     useOnScrollToBottom,
+    useDefaultAddons,
     useProfile,
     useRouteFocused,
     useSettings,
