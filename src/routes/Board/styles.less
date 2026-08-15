@@ -28,7 +28,17 @@
             padding: 0 1rem;
             overflow-y: auto;
 
+            .board-hero {
+                // Full bleed against the content's horizontal padding, with the
+                // first row riding up over the banner's fade as in the reference.
+                margin: 0 -1rem -3.5rem;
+            }
+
             .board-row {
+                // The hero is positioned, so it would otherwise paint over the
+                // rows that follow it.
+                position: relative;
+                z-index: 1;
                 margin-top: 1rem;
                 margin-bottom: 2rem;
             }

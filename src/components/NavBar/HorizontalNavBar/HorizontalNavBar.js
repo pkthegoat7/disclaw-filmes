@@ -9,11 +9,12 @@ const { Button, Image } = require('stremio/components');
 const { useFullscreen } = require('stremio/common/Fullscreen');
 const { useHorizontalNavGamepadNavigation } = require('stremio/services/GamepadNavigation');
 const SearchBar = require('./SearchBar');
+const NavTabs = require('./NavTabs');
 const NavMenu = require('./NavMenu');
 const styles = require('./styles');
 const { t } = require('i18next');
 
-const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, originPath, hdrInfo, ...props }) => {
+const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, originPath, hdrInfo, tabs, ...props }) => {
     const navigate = useNavigate();
     const backButtonOnClick = React.useCallback(() => {
         if (originPath) {
@@ -45,6 +46,12 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
                             alt={' '}
                         />
                     </div>
+            }
+            {
+                Array.isArray(tabs) ?
+                    <NavTabs className={styles['nav-tabs']} tabs={tabs} selected={route} />
+                    :
+                    null
             }
             {
                 typeof title === 'string' && title.length > 0 ?
@@ -101,6 +108,7 @@ HorizontalNavBar.propTypes = {
     hdrInfo: PropTypes.shape({
         gamma: PropTypes.string,
     }),
+    tabs: PropTypes.array,
 };
 
 module.exports = HorizontalNavBar;

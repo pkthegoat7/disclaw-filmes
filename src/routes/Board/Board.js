@@ -8,6 +8,7 @@ const { useStreamingServer, useNotifications, withCoreSuspender, getVisibleChild
 const { ContinueWatchingItem, EventModal, MainNavBars, MetaItem, MetaRow } = require('stremio/components');
 const useBoard = require('./useBoard');
 const useContinueWatchingPreview = require('./useContinueWatchingPreview');
+const Hero = require('./Hero');
 const styles = require('./styles');
 const { default: StreamingServerWarning } = require('./StreamingServerWarning');
 
@@ -20,6 +21,12 @@ const Board = () => {
     const [board, loadBoardRows] = useBoard();
     const catalogs = useWatchableCatalogs(board.catalogs);
     const notifications = useNotifications();
+    // Featured title: the first item of the first row that has any, so the
+    // banner follows whatever the catalogs are actually showing.
+    const heroItem = React.useMemo(() => {
+        const catalog = catalogs.find(({ content }) => content?.type === 'Ready' && content.content.length > 0);
+        return catalog?.content.content[0] ?? null;
+    }, [catalogs]);
     const profile = useProfile();
     const boardCatalogsOffset = continueWatchingPreview.items.length > 0 ? 1 : 0;
     const scrollContainerRef = React.useRef();
@@ -51,6 +58,12 @@ const Board = () => {
             <EventModal />
             <MainNavBars className={styles['board-content-container']} route={'board'}>
                 <div ref={scrollContainerRef} className={styles['board-content']} onScroll={onScroll}>
+                    {
+                        heroItem !== null ?
+                            <Hero className={styles['board-hero']} item={heroItem} />
+                            :
+                            null
+                    }
                     {
                         continueWatchingPreview.items.length > 0 ?
                             <MetaRow

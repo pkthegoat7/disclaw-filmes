@@ -6,12 +6,18 @@
 const EXTRA_TRANSLATIONS = {
     'en-US': {
         DISCLAW_WATCHABLE_ONLY: 'Only show what I can watch',
+        DISCLAW_HERO_PLAY: 'Watch',
+        DISCLAW_HERO_INFO: 'More info',
     },
     'pt-BR': {
         DISCLAW_WATCHABLE_ONLY: 'Mostrar só o que dá pra assistir',
+        DISCLAW_HERO_PLAY: 'Assistir',
+        DISCLAW_HERO_INFO: 'Mais informações',
     },
     'pt-PT': {
         DISCLAW_WATCHABLE_ONLY: 'Mostrar só o que dá para ver',
+        DISCLAW_HERO_PLAY: 'Ver',
+        DISCLAW_HERO_INFO: 'Mais informação',
     },
 };
 

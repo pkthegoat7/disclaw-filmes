@@ -2,8 +2,8 @@
 
 import React, { memo } from 'react';
 import classnames from 'classnames';
-import { VerticalNavBar, HorizontalNavBar } from 'stremio/components/NavBar';
-import { useContentGamepadNavigation, useVerticalNavGamepadNavigation } from 'stremio/services/GamepadNavigation';
+import { HorizontalNavBar } from 'stremio/components/NavBar';
+import { useContentGamepadNavigation } from 'stremio/services/GamepadNavigation';
 import styles from './MainNavBars.less';
 
 const TABS = [
@@ -22,13 +22,14 @@ type Props = {
     children?: React.ReactNode,
 };
 
+// The routes live as text links in the top bar rather than a vertical rail, as
+// in Disclaw Filmes. HorizontalNavBar already registers itself for gamepad
+// navigation, so the tabs come along with it.
 const MainNavBars = memo(({ className, route, query, children }: Props) => {
-    const navRef = React.useRef(null);
     const contentRef = React.useRef(null);
 
     const navRoute = route === 'continue_watching' ? 'library' : (route ?? '');
     useContentGamepadNavigation(contentRef, navRoute);
-    useVerticalNavGamepadNavigation(navRef, navRoute);
 
     return (
         <div className={classnames(className, styles['main-nav-bars-container'])}>
@@ -40,11 +41,6 @@ const MainNavBars = memo(({ className, route, query, children }: Props) => {
                 searchBar={true}
                 fullscreenButton={true}
                 navMenu={true}
-            />
-            <VerticalNavBar
-                ref={navRef}
-                className={styles['vertical-nav-bar']}
-                selected={route}
                 tabs={TABS}
             />
             <div ref={contentRef} className={styles['nav-content-container']}>{children}</div>

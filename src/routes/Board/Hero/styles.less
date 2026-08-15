@@ -1,0 +1,118 @@
+// Copyright (C) 2017-2026 Smart code 203358507
+
+// The scrim is authored in raw rgb because it needs the page colour at partial
+// alpha, which a var() holding an opaque colour cannot give. Keep in sync with
+// --primary-background-color in App/styles.less.
+@page: 11, 11, 15;
+
+.hero-container {
+    position: relative;
+    z-index: 0;
+    display: flex;
+    align-items: flex-end;
+    height: ~"min(62vh, 34rem)";
+    padding: 0 ~"clamp(1rem, 4vw, 3.5rem)" ~"clamp(2.5rem, 6vh, 5rem)";
+    background-color: var(--secondary-background-color);
+    background-size: cover;
+    background-position: center 20%;
+    background-repeat: no-repeat;
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(90deg, rgba(@page, 0.95) 0%, rgba(@page, 0.5) 45%, transparent 75%),
+            linear-gradient(0deg, rgba(@page, 1) 2%, transparent 45%);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 40rem;
+    }
+
+    .logo {
+        max-width: ~"min(100%, 24rem)";
+        max-height: 9rem;
+        margin-bottom: 1rem;
+        object-fit: contain;
+        object-position: left bottom;
+    }
+
+    .title {
+        margin: 0 0 0.875rem;
+        font-size: ~"clamp(1.9rem, 5vw, 3.75rem)";
+        font-weight: 700;
+        line-height: 1.05;
+        color: var(--primary-foreground-color);
+    }
+
+    .meta {
+        display: flex;
+        flex-direction: row;
+        gap: 0.875rem;
+        margin-bottom: 0.875rem;
+        font-size: 0.875rem;
+        color: var(--dim-foreground-color);
+    }
+
+    .description {
+        display: -webkit-box;
+        margin: 0;
+        overflow: hidden;
+        font-size: ~"clamp(0.875rem, 1.3vw, 1.0625rem)";
+        line-height: 1.5;
+        color: var(--primary-foreground-color);
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+    }
+
+    .actions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1.375rem;
+    }
+
+    .button {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 0.7rem 1.5rem;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        transition: opacity 0.15s ease-out;
+
+        &:hover, &:focus {
+            outline: none;
+            opacity: 0.82;
+        }
+
+        &.primary {
+            background-color: var(--primary-foreground-color);
+            color: var(--secondary-foreground-color);
+        }
+
+        &.secondary {
+            background-color: rgba(109, 109, 110, 0.7);
+            color: var(--primary-foreground-color);
+        }
+    }
+}
+
+@media only screen and (max-width: 45rem) {
+    .hero-container {
+        height: ~"min(56vh, 24rem)";
+
+        .logo {
+            max-height: 6rem;
+        }
+
+        .description {
+            -webkit-line-clamp: 3;
+        }
+    }
+}

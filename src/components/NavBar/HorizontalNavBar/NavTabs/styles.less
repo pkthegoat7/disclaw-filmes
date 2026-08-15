@@ -1,0 +1,63 @@
+// Copyright (C) 2017-2026 Smart code 203358507
+
+.nav-tabs-container {
+    display: flex;
+    flex: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+
+    .nav-tab {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+        height: 2.5rem;
+        padding: 0 0.75rem;
+        border-radius: var(--border-radius);
+        color: var(--dim-foreground-color);
+        transition: color 0.15s ease-out, background-color 0.15s ease-out;
+
+        &:hover, &:focus {
+            outline: none;
+            background-color: var(--overlay-color);
+            color: var(--primary-foreground-color);
+        }
+
+        &.selected {
+            color: var(--primary-foreground-color);
+
+            .icon {
+                color: var(--primary-accent-color);
+            }
+        }
+
+        .icon {
+            flex: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            color: currentcolor;
+        }
+
+        .label {
+            flex: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+    }
+}
+
+// The reference drops its text links on narrow screens; keep the icons so the
+// routes stay reachable without the vertical rail this replaced.
+@media only screen and (max-width: 60rem) {
+    .nav-tabs-container {
+        .nav-tab {
+            padding: 0 0.5rem;
+
+            .label {
+                display: none;
+            }
+        }
+    }
+}
