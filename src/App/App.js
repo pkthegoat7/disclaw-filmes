@@ -7,7 +7,7 @@ const { useNavigate } = require('react-router');
 const { useCore } = require('stremio/core');
 const { Routes } = require('stremio-router');
 const { Chromecast, ServicesProvider, GamepadProvider } = require('stremio/services');
-const { FullscreenProvider, ToastProvider, TooltipProvider, ShortcutsProvider, DiscordProvider, CONSTANTS, useBinaryState, useProfile, withCoreSuspender, onFileDrop, usePlatform } = require('stremio/common');
+const { FullscreenProvider, ToastProvider, TooltipProvider, ShortcutsProvider, DiscordProvider, CONSTANTS, DEFAULT_LANGUAGE, LANGUAGE_SEEDED_KEY, useBinaryState, useProfile, useSettings, withCoreSuspender, onFileDrop, usePlatform } = require('stremio/common');
 const ServicesToaster = require('./ServicesToaster');
 const SearchParamsHandler = require('./SearchParamsHandler');
 const DeepLinkHandler = require('./DeepLinkHandler');
@@ -24,6 +24,7 @@ const App = () => {
     const profile = useProfile();
     const { i18n } = useTranslation();
     const { shell } = usePlatform();
+    const [, updateSettings] = useSettings();
     const navigate = useNavigate();
     const [gamepadSupportEnabled, setGamepadSupportEnabled] = React.useState(false);
     const services = React.useMemo(() => {
@@ -128,6 +129,18 @@ const App = () => {
 
         return () => shell.off('open-media', onOpenMedia);
     }, [shell.state.initialized]);
+
+    React.useEffect(() => {
+        // The core profile defaults to English. Seed it with the Disclaw default
+        // once per browser, so afterwards the language stays whatever the user picked.
+        if (typeof profile.settings?.interfaceLanguage !== 'string') return;
+        if (window.localStorage.getItem(LANGUAGE_SEEDED_KEY)) return;
+
+        window.localStorage.setItem(LANGUAGE_SEEDED_KEY, 'true');
+        if (profile.settings.interfaceLanguage !== DEFAULT_LANGUAGE) {
+            updateSettings({ interfaceLanguage: DEFAULT_LANGUAGE });
+        }
+    }, [profile.settings]);
 
     React.useEffect(() => {
         if (typeof profile.settings?.interfaceLanguage === 'string') {

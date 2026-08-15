@@ -7,6 +7,7 @@ const { ToastProvider, useToast } = require('./Toast');
 const { TooltipProvider, Tooltip } = require('./Tooltips');
 const { ShortcutsProvider, useShortcuts, onShortcut, getKeyboardShortcutKey, getKeyboardShortcutKeys } = require('./Shortcuts');
 const { DiscordProvider, useDiscord, EMPTY_DISCORD_TIMESTAMPS, getPlaybackDiscordActivity } = require('./Discord');
+const { APP_NAME, DEFAULT_LANGUAGE, LANGUAGE_SEEDED_KEY, brandText, brandTranslations } = require('./brand');
 const CONSTANTS = require('./CONSTANTS');
 const { withCoreSuspender, useCoreSuspender } = require('./CoreSuspender');
 const getVisibleChildrenRange = require('./getVisibleChildrenRange');
@@ -52,6 +53,11 @@ module.exports = {
     useDiscord,
     EMPTY_DISCORD_TIMESTAMPS,
     getPlaybackDiscordActivity,
+    APP_NAME,
+    DEFAULT_LANGUAGE,
+    LANGUAGE_SEEDED_KEY,
+    brandText,
+    brandTranslations,
     CONSTANTS,
     withCoreSuspender,
     useCoreSuspender,

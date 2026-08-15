@@ -21,8 +21,9 @@ const App = require('./App');
 const { default: WebUpdateScreen } = require('./App/WebUpdateScreen');
 const { CoreProvider } = require('./core');
 const { FileDropProvider, PlatformProvider } = require('./common');
+const { DEFAULT_LANGUAGE, brandTranslations } = require('./common/brand');
 
-const translations = Object.fromEntries(Object.entries(stremioTranslations()).map(([key, value]) => [key, {
+const translations = Object.fromEntries(Object.entries(brandTranslations(stremioTranslations())).map(([key, value]) => [key, {
     translation: value
 }]));
 
@@ -30,7 +31,7 @@ i18n
     .use(initReactI18next)
     .init({
         resources: translations,
-        lng: 'en-US',
+        lng: DEFAULT_LANGUAGE,
         fallbackLng: 'en-US',
         interpolation: {
             escapeValue: false
