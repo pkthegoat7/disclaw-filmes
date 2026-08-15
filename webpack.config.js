@@ -12,7 +12,21 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const packageJson = require('./package.json');
 
-const COMMIT_HASH = execSync('git rev-parse HEAD').toString().trim();
+// Asset paths are namespaced by this, so it only has to be unique per build.
+// Builds that run outside a checkout (Docker images, uploaded snapshots) have
+// no .git to read, so fall back to what the platform exposes, then to a stamp.
+const gitCommitHash = () => {
+    try {
+        return execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+    } catch {
+        return null;
+    }
+};
+
+const COMMIT_HASH = process.env.COMMIT_HASH
+    || process.env.RAILWAY_GIT_COMMIT_SHA
+    || gitCommitHash()
+    || `build-${Date.now().toString(36)}`;
 
 const THREAD_LOADER = {
     loader: 'thread-loader',
