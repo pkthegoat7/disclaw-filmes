@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <!-- Symbol geometry is inlined rather than referenced: an SVG loaded as an
+         image runs in secure static mode, where external <image href> is blocked.
+         Keep in sync with symbol.svg. -->
+    <defs>
+        <radialGradient id="disclaw-backdrop" cx="0.35" cy="0.3" r="0.85">
+            <stop offset="0" stop-color="#0F4630"/>
+            <stop offset="1" stop-color="#05170F"/>
+        </radialGradient>
+        <linearGradient id="disclaw-green" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#5CF29A"/>
+            <stop offset="0.5" stop-color="#1DD176"/>
+            <stop offset="1" stop-color="#0A8F4E"/>
+        </linearGradient>
+        <mask id="disclaw-claws">
+            <rect width="512" height="512" fill="#000"/>
+            <path fill="#fff" fill-rule="evenodd" d="
+                M112,96 H256 A160,160 0 0 1 256,416 H112 A16,16 0 0 1 96,400 V112 A16,16 0 0 1 112,96 Z
+                M170,158 H256 A98,98 0 0 1 256,354 H170 A12,12 0 0 1 158,342 V170 A12,12 0 0 1 170,158 Z
+            "/>
+            <path fill="#000" d="M250,-20 Q317.15,169.46 470,300 Q350.11,146.80 250,-20 Z"/>
+            <path fill="#000" d="M178,50 Q253.11,256.69 428,390 Q294.95,225.92 178,50 Z"/>
+            <path fill="#000" d="M112,130 Q207.15,324.41 382,452 Q237.80,298.71 112,130 Z"/>
+        </mask>
+    </defs>
+    <rect width="512" height="512" fill="url(#disclaw-backdrop)"/>
+    <g transform="translate(97,97) scale(0.62109375)">
+        <rect width="512" height="512" fill="url(#disclaw-green)" mask="url(#disclaw-claws)"/>
+    </g>
+</svg>

@@ -9,6 +9,7 @@
         "start": "webpack serve --mode development",
         "start-prod": "webpack serve --mode production",
         "build": "webpack --mode production",
+        "brand": "node scripts/render-brand.js",
         "test": "jest",
         "lint": "eslint src",
         "scan-translations": "pnpx jest ./tests/i18nScan.test.js"

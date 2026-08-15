@@ -60,18 +60,39 @@ docker build -t disclaw .
 docker run -p 8080:8080 disclaw
 ```
 
-## 🎨 Personalização da marca
+## 🎨 Marca
 
-Pontos onde o nome/identidade do Disclaw aparece:
+A identidade é a letra **D** cortada por três garras, em verde. As fontes são vetoriais e ficam em `assets/brand/`:
 
-| Onde | O que |
+| Fonte | Gera |
 |---|---|
-| `package.json` | `name`, `displayName` |
-| `manifest.json` | `name`, `short_name`, `description`, cores do tema |
-| `src/index.html` | `<title>` e `apple-mobile-web-app-title` |
-| `assets/images/disclaw_symbol.png` | Símbolo na navbar, no player (buffering) e na tela de update |
-| `assets/images/logo.png` | Logo grande da tela de intro/login |
-| `assets/images/icon_*.png`, `maskable_icon_*.png`, `assets/favicons/` | Ícones do PWA e favicon |
+| `assets/brand/symbol.svg` | `assets/images/disclaw_symbol.png`, `icon*.png`, `assets/favicons/*.ico` |
+| `assets/brand/maskable.svg` | `assets/images/maskable_icon*.png` (fundo cheio + safe zone do PWA) |
+| `assets/brand/wordmark.html` | `assets/images/logo.png` (símbolo + "disclaw" em Plus Jakarta Sans) |
+
+Depois de editar qualquer fonte, rasterize tudo de novo:
+
+```bash
+pnpm run brand
+```
+
+O script usa o Chrome como rasterizador (`scripts/render-brand.js`); aponte outro binário com a variável `CHROME` se precisar.
+
+### Cores
+
+| Token | Valor | Onde |
+|---|---|---|
+| Verde da marca | `#1DD176` | `--primary-accent-color` em `src/App/styles.less`, gradiente do símbolo |
+| Verde claro | `#5CF29A` | topo do gradiente do símbolo |
+| Verde escuro | `#0A8F4E` | base do gradiente do símbolo |
+| Fundo secundário | `rgba(10, 44, 31, 1)` | gradiente do app |
+| Tema do PWA | `#0F4630` / `#08130E` | `theme_color` / `background_color` no `manifest.json` |
+
+Os fundos da tela de login (`assets/images/background_1.svg`, `background_2.svg`) também foram recoloridos para verde.
+
+### Texto da marca
+
+O nome do produto nas strings vem do pacote `stremio-translations` e é reescrito em runtime por `src/common/brand.js` — mude `APP_NAME` ali e a interface inteira acompanha. Strings sem a palavra "Stremio" (como o slogan "Liberdade para o Stream") não são afetadas e precisam ser trocadas à mão.
 
 ## 📄 Licença
 
