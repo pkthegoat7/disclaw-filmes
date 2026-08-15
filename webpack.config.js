@@ -237,8 +237,14 @@ module.exports = (env, argv) => ({
         argv.mode === 'production' &&
             new WorkboxPlugin.GenerateSW({
                 maximumFileSizeToCacheInBytes: 20000000,
-                clientsClaim: true,
-                skipWaiting: true
+                // A new worker waits for every tab to close instead of taking
+                // over a running session. Upstream takes over immediately and
+                // covers the resulting asset mismatch with a full-screen update
+                // prompt; Disclaw drops the prompt, so the takeover has to go
+                // too, or a session could be left asking for chunks that the
+                // new precache no longer has under the same name.
+                clientsClaim: false,
+                skipWaiting: false
             }),
         new CopyWebpackPlugin({
             patterns: [

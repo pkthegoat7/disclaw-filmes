@@ -18,7 +18,6 @@ const i18n = require('i18next');
 const { initReactI18next } = require('react-i18next');
 const stremioTranslations = require('stremio-translations');
 const App = require('./App');
-const { default: WebUpdateScreen } = require('./App/WebUpdateScreen');
 const { CoreProvider } = require('./core');
 const { FileDropProvider, PlatformProvider } = require('./common');
 const { DEFAULT_LANGUAGE, brandTranslations } = require('./common/brand');
@@ -51,10 +50,13 @@ root.render(
             <CoreProvider appInfo={appInfo}>
                 <FileDropProvider>
                     <HashRouter>
-                        <>
-                            <WebUpdateScreen />
-                            <App />
-                        </>
+                        {/*
+                          * No update prompt: with the worker no longer claiming
+                          * running tabs, a new version simply takes effect the
+                          * next time the app is opened. App/WebUpdateScreen is
+                          * kept in the tree's source if it is ever wanted back.
+                          */}
+                        <App />
                     </HashRouter>
                 </FileDropProvider>
             </CoreProvider>
