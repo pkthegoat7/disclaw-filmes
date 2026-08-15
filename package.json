@@ -5,6 +5,7 @@
     "author": "Smart Code OOD",
     "private": true,
     "license": "gpl-2.0",
+    "packageManager": "pnpm@11.1.2",
     "scripts": {
         "start": "webpack serve --mode development",
         "start-prod": "webpack serve --mode production",

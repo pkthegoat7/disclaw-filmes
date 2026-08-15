@@ -5,6 +5,7 @@ FROM node:$NODE_VERSION AS base
 # Setup pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
 RUN corepack enable
 RUN apk add --no-cache git
