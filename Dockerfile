@@ -11,7 +11,7 @@ RUN corepack enable
 RUN apk add --no-cache git
 
 # Meta
-LABEL Description="Disclaw" Vendor="Smart Code OOD" Version="1.0.0"
+LABEL Description="Disclaw" Vendor="Disclaw" Version="1.0.0"
 
 RUN mkdir -p /var/www/disclaw
 WORKDIR /var/www/disclaw
