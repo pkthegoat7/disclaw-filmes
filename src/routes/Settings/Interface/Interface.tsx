@@ -17,6 +17,7 @@ const Interface = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) =>
         escExitFullscreenToggle,
         hideSpoilersToggle,
         gamepadSupportToggle,
+        watchableOnlyToggle,
     } = useInterfaceOptions(profile);
 
     return (
@@ -45,6 +46,12 @@ const Interface = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) =>
                         />
                     </Option>
             }
+            <Option label={'DISCLAW_WATCHABLE_ONLY'}>
+                <Toggle
+                    tabIndex={-1}
+                    {...watchableOnlyToggle}
+                />
+            </Option>
             <Option label={'SETTINGS_BLUR_UNWATCHED_IMAGE'}>
                 <Toggle
                     tabIndex={-1}

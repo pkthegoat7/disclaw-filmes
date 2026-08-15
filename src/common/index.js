@@ -24,6 +24,8 @@ const useNotifications = require('./useNotifications');
 const useOnScrollToBottom = require('./useOnScrollToBottom');
 const useDefaultAddons = require('./useDefaultAddons');
 const useProfile = require('./useProfile');
+const useWatchableOnly = require('./watchableOnly');
+const { useWatchableItems, useWatchableCatalogs } = require('./useWatchable');
 const { default: useRouteFocused } = require('./useRouteFocused');
 const { default: useSettings } = require('./useSettings');
 const useStreamingServer = require('./useStreamingServer');
@@ -86,4 +88,7 @@ module.exports = {
     useTranslate,
     useOrientation,
     useLanguageSorting,
+    useWatchableOnly,
+    useWatchableItems,
+    useWatchableCatalogs,
 };

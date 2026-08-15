@@ -5,7 +5,7 @@ const classnames = require('classnames');
 const debounce = require('lodash.debounce');
 const useTranslate = require('stremio/common/useTranslate');
 const { default: Icon } = require('@stremio/stremio-icons/react');
-const { withCoreSuspender, getVisibleChildrenRange } = require('stremio/common');
+const { withCoreSuspender, getVisibleChildrenRange, useWatchableCatalogs } = require('stremio/common');
 const { Image, MainNavBars, MetaItem, MetaRow } = require('stremio/components');
 const useSearch = require('./useSearch');
 const styles = require('./styles');
@@ -17,6 +17,7 @@ const Search = () => {
     const [queryParams] = useSearchParams();
     const t = useTranslate();
     const [search, loadSearchRows] = useSearch(queryParams);
+    const catalogs = useWatchableCatalogs(search.catalogs);
     const query = React.useMemo(() => {
         return search.selected !== null ?
             search.selected.extra.reduceRight((query, [name, value]) => {
@@ -85,7 +86,7 @@ const Search = () => {
                                 <div className={styles['message-label']}>{ t.string('STREMIO_TV_SEARCH_NO_ADDONS') }</div>
                             </div>
                             :
-                            search.catalogs.map((catalog, index) => {
+                            catalogs.map((catalog, index) => {
                                 switch (catalog.content?.type) {
                                     case 'Ready': {
                                         return (

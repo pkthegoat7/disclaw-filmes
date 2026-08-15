@@ -7,7 +7,7 @@ const { useSearchParams } = require('react-router-dom');
 const classnames = require('classnames');
 const { default: Icon } = require('@stremio/stremio-icons/react');
 const { useCore } = require('stremio/core');
-const { CONSTANTS, useBinaryState, useOnScrollToBottom, withCoreSuspender } = require('stremio/common');
+const { CONSTANTS, useBinaryState, useOnScrollToBottom, withCoreSuspender, useWatchableItems } = require('stremio/common');
 const { AddonDetailsModal, Button, DelayedRenderer, Image, MainNavBars, MetaItem, MetaPreview, ModalDialog, MultiselectMenu } = require('stremio/components');
 const useDiscover = require('./useDiscover');
 const useSelectableInputs = require('./useSelectableInputs');
@@ -31,10 +31,13 @@ const Discover = () => {
     const [addonModalOpen, openAddonModal, closeAddonModal] = useBinaryState(false);
     const [selectedMetaItemIndex, setSelectedMetaItemIndex] = React.useState(0);
 
+    const metaItems = useWatchableItems(
+        discover.catalog?.content.type === 'Ready' ? discover.catalog.content.content : null
+    );
+
     const selectedMetaItem = React.useMemo(() => {
-        return discover.catalog?.content.type === 'Ready' &&
-            discover.catalog.content.content[selectedMetaItemIndex] || null;
-    }, [discover.catalog, selectedMetaItemIndex]);
+        return metaItems[selectedMetaItemIndex] || null;
+    }, [metaItems, selectedMetaItemIndex]);
 
     const metasContainerRef = React.useRef();
     const metaPreviewRef = React.useRef();
@@ -187,7 +190,7 @@ const Discover = () => {
                                     </div>
                                     :
                                     <div ref={metasContainerRef} className={classnames(styles['meta-items-container'], 'animation-fade-in')} onScroll={onScroll} onFocusCapture={metaItemsOnFocusCapture}>
-                                        {discover.catalog.content.content.map((metaItem, index) => (
+                                        {metaItems.map((metaItem, index) => (
                                             <MetaItem
                                                 key={index}
                                                 className={classnames({ 'selected': selectedMetaItemIndex === index })}

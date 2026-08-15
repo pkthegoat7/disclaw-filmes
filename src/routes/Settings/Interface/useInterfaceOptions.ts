@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { useCore } from 'stremio/core';
-import { interfaceLanguages, useLanguageSorting } from 'stremio/common';
+import { interfaceLanguages, useLanguageSorting, useWatchableOnly } from 'stremio/common';
 
 const useInterfaceOptions = (profile: Profile) => {
     const core = useCore();
+    const [watchableOnly, setWatchableOnly] = useWatchableOnly();
 
     const interfaceLanguageOptions = useMemo(() =>
         interfaceLanguages.map(({ name, codes }) => ({
@@ -97,12 +98,18 @@ const useInterfaceOptions = (profile: Profile) => {
         }
     }), [profile.settings]);
 
+    const watchableOnlyToggle = useMemo(() => ({
+        checked: watchableOnly,
+        onClick: () => setWatchableOnly(!watchableOnly)
+    }), [watchableOnly]);
+
     return {
         interfaceLanguageSelect,
         escExitFullscreenToggle,
         quitOnCloseToggle,
         hideSpoilersToggle,
         gamepadSupportToggle,
+        watchableOnlyToggle,
     };
 };
 

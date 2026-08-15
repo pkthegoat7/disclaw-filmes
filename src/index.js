@@ -22,8 +22,9 @@ const { default: WebUpdateScreen } = require('./App/WebUpdateScreen');
 const { CoreProvider } = require('./core');
 const { FileDropProvider, PlatformProvider } = require('./common');
 const { DEFAULT_LANGUAGE, brandTranslations } = require('./common/brand');
+const { withExtraTranslations } = require('./common/extraTranslations');
 
-const translations = Object.fromEntries(Object.entries(brandTranslations(stremioTranslations())).map(([key, value]) => [key, {
+const translations = Object.fromEntries(Object.entries(withExtraTranslations(brandTranslations(stremioTranslations()))).map(([key, value]) => [key, {
     translation: value
 }]));
 

@@ -4,7 +4,7 @@ const React = require('react');
 const classnames = require('classnames');
 const debounce = require('lodash.debounce');
 const useTranslate = require('stremio/common/useTranslate');
-const { useStreamingServer, useNotifications, withCoreSuspender, getVisibleChildrenRange, useProfile } = require('stremio/common');
+const { useStreamingServer, useNotifications, withCoreSuspender, getVisibleChildrenRange, useProfile, useWatchableCatalogs } = require('stremio/common');
 const { ContinueWatchingItem, EventModal, MainNavBars, MetaItem, MetaRow } = require('stremio/components');
 const useBoard = require('./useBoard');
 const useContinueWatchingPreview = require('./useContinueWatchingPreview');
@@ -18,6 +18,7 @@ const Board = () => {
     const streamingServer = useStreamingServer();
     const continueWatchingPreview = useContinueWatchingPreview();
     const [board, loadBoardRows] = useBoard();
+    const catalogs = useWatchableCatalogs(board.catalogs);
     const notifications = useNotifications();
     const profile = useProfile();
     const boardCatalogsOffset = continueWatchingPreview.items.length > 0 ? 1 : 0;
@@ -62,7 +63,7 @@ const Board = () => {
                             :
                             null
                     }
-                    {board.catalogs.map((catalog, index) => {
+                    {catalogs.map((catalog, index) => {
                         switch (catalog.content?.type) {
                             case 'Ready': {
                                 return (
