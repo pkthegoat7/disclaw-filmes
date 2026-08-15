@@ -16,7 +16,9 @@
 @play-icon-size: 4rem;
 
 .meta-item-container {
-    padding: 1rem;
+    // Tighter than upstream, closer to the reference's 8px gutters. Still wide
+    // enough for the hover scale to grow into without clipping the neighbour.
+    padding: 0.5rem;
     overflow: visible;
 
     &:hover, &:focus, &:global(.active), &:global(.selected) {
@@ -24,14 +26,16 @@
         transition: background-color 100ms ease-out;
 
         .poster-container {
-            box-shadow: 0 0 0 0.2rem var(--primary-foreground-color);
+            // Scale plus depth instead of the upstream white ring.
+            transform: scale(1.07);
+            box-shadow: var(--outer-glow);
 
             .dismiss-icon-layer {
                 opacity: 1;
             }
 
             .poster-image-layer {
-                transform: scale(1.05);
+                transform: none;
             }
 
             .play-icon-layer {
@@ -74,8 +78,10 @@
     .poster-container {
         position: relative;
         z-index: 0;
-        background-color: var(--overlay-color);
+        background-color: var(--secondary-background-color);
         border-radius: var(--border-radius);
+        // The whole card lifts on hover, as in Disclaw Filmes.
+        transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
 
         &:global(.poster-change-cursor) {
             .poster-image-layer {

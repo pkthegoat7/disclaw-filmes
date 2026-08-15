@@ -58,20 +58,29 @@
     --color-placeholder: #60606080;
     --color-placeholder-text: @color-surface-50;
     --color-placeholder-background: @color-surface-dark5-20;
-    --primary-background-color: rgba(12, 11, 17, 1);
-    --secondary-background-color: rgba(10, 44, 31, 1);
-    --primary-foreground-color: rgba(255, 255, 255, 0.9);
+    // Surfaces follow the Disclaw Filmes palette: a near-black page, one
+    // elevated tone for cards and modals, a lighter one for hover. Flat rather
+    // than the tinted gradient upstream uses — that flatness is most of what
+    // reads as "Netflix" in the reference.
+    --primary-background-color: rgba(11, 11, 15, 1);
+    --secondary-background-color: rgba(22, 22, 28, 1);
+    --surface-hover-color: rgba(35, 35, 43, 1);
+    --border-color: rgba(42, 42, 51, 1);
+    --primary-foreground-color: rgba(243, 243, 245, 1);
     --secondary-foreground-color: rgb(12, 11, 17, 1);
+    --dim-foreground-color: rgba(161, 161, 170, 1);
+    // The reference accents in Netflix red; Disclaw keeps its own green.
     --primary-accent-color: rgb(29, 209, 118);
     --secondary-accent-color: rgba(34, 179, 101, 1);
     --tertiary-accent-color: rgba(246, 199, 0, 1);
     --quaternary-accent-color: rgba(18, 69, 166, 1);
-    --overlay-color: rgba(255, 255, 255, 0.05);
-    --modal-background-color: rgba(9, 20, 15, 1);
-    --outer-glow: 0px 0px 15px rgba(29, 209, 118, 0.37);
+    --overlay-color: rgba(255, 255, 255, 0.07);
+    --modal-background-color: rgba(22, 22, 28, 1);
+    // Depth instead of glow — the reference lifts things with shadow only.
+    --outer-glow: 0 8px 30px rgba(0, 0, 0, 0.6);
     --warning-accent-color: rgba(255, 165, 0, 1);
-    --danger-accent-color: rgba(220, 38, 38, 1);  
-    --border-radius: 0.75rem;
+    --danger-accent-color: rgba(220, 38, 38, 1);
+    --border-radius: 0.375rem;
     --top-overlay-size: @top-overlay-size;
     --bottom-overlay-size: @bottom-overlay-size;
     --overlap-size: @overlap-size;
@@ -174,7 +183,8 @@ html {
     body {
         width: 100%;
         height: 100%;
-        background: linear-gradient(41deg, var(--primary-background-color) 0%, var(--secondary-background-color) 100%);
+        // Flat, not the upstream diagonal gradient — see the palette note above.
+        background: var(--primary-background-color);
         -webkit-font-smoothing: antialiased;
 
         :global(#app) {
