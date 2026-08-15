@@ -12,7 +12,11 @@ const DEFAULT_ADDONS = [
     'https://torrentio.strem.fun/language=portuguese/manifest.json',
 ];
 
-const SEEDED_KEY = 'disclaw.addonsSeeded';
+// Keyed per account, not per browser. Logging in swaps the whole addon
+// collection for the one synced from the Stremio account, so a single marker
+// would let the defaults apply to the anonymous profile and never to the
+// account the user actually watches on.
+const seededKey = (profile) => `disclaw.addonsSeeded:${profile.auth?.user?._id ?? 'anonymous'}`;
 
 const install = (core, transportUrl, manifest) => {
     core.transport.dispatch({
@@ -31,23 +35,29 @@ const install = (core, transportUrl, manifest) => {
     });
 };
 
-// Seeded once per browser: from then on the addon list belongs to the user,
-// so an addon they uninstall stays uninstalled. The marker is only written
-// once every addon actually landed, otherwise a failed first load (offline,
-// addon down) would silently cost them the defaults forever.
+// Seeded once per account: from then on the addon list belongs to the user, so
+// an addon they uninstall stays uninstalled. The marker is only written once
+// every addon actually landed, otherwise a failed first load (offline, addon
+// down) would silently cost them the defaults forever.
+//
+// For a signed-in account the core pushes the result to Stremio, so this shows
+// up on the user's other devices too — deliberate, that is the point of having
+// defaults, but it does mean the seeding is not confined to this browser.
 const useDefaultAddons = () => {
     const core = useCore();
     const profile = useProfile();
     const seeding = React.useRef(false);
 
+    const key = seededKey(profile);
+
     React.useEffect(() => {
         if (!Array.isArray(profile.addons) || seeding.current) return;
-        if (window.localStorage.getItem(SEEDED_KEY)) return;
+        if (window.localStorage.getItem(key)) return;
 
         const installed = profile.addons.map(({ transportUrl }) => transportUrl);
         const missing = DEFAULT_ADDONS.filter((transportUrl) => !installed.includes(transportUrl));
         if (missing.length === 0) {
-            window.localStorage.setItem(SEEDED_KEY, 'true');
+            window.localStorage.setItem(key, 'true');
             return;
         }
 
@@ -57,12 +67,12 @@ const useDefaultAddons = () => {
                 .then((response) => response.json())
                 .then((manifest) => install(core, transportUrl, manifest))
         ))
-            .then(() => window.localStorage.setItem(SEEDED_KEY, 'true'))
+            .then(() => window.localStorage.setItem(key, 'true'))
             .catch((error) => console.error('Failed to install default addons:', error))
             .then(() => {
                 seeding.current = false;
             });
-    }, [profile.addons]);
+    }, [profile.addons, key]);
 };
 
 module.exports = useDefaultAddons;
