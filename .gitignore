@@ -4,3 +4,8 @@
 /npm-debug.log
 .DS_Store
 .prettierignore
+/dist-electron
+
+# Stremio's own component, copied in at package time by scripts/bundle-server.js.
+# Not ours to redistribute, so it stays out of the repository.
+/electron/server.js

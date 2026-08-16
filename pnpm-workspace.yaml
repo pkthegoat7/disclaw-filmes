@@ -2,3 +2,9 @@ minimumReleaseAgeExclude:
   - '@stremio/*'
 
 blockExoticSubdeps: false
+
+allowBuilds:
+  # Both need their install scripts to run: electron fetches its runtime binary,
+  # electron-winstaller the pieces used to produce the Windows installer.
+  electron: true
+  electron-winstaller: true

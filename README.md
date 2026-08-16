@@ -53,6 +53,27 @@ O dev server sobe em `http://localhost:8080`.
 | `pnpm run lint` | Lint do código |
 | `pnpm run scan-translations` | Procura chaves de tradução faltando |
 
+### 💻 App de desktop
+
+A versão web não reproduz torrents, e isso não é limitação do Disclaw. Quem transforma um torrent em vídeo é o **servidor de streaming do Stremio**, e ele devolve cabeçalhos CORS apenas para os domínios do próprio Stremio:
+
+```
+Origin: https://web.stremio.com   →  Access-Control-Allow-Origin: *
+Origin: https://app.strem.io      →  Access-Control-Allow-Origin: *
+Origin: <qualquer outro>          →  (sem cabeçalho, navegador bloqueia)
+```
+
+Nem `file://` nem uma porta local arbitrária passam. Ou seja: um Disclaw hospedado em domínio próprio nunca vai tocar torrent no navegador, mesmo com o servidor rodando na máquina.
+
+O app resolve os dois lados — sobe o servidor junto e reescreve a resposta dele para a origem local, em `electron/main.js`.
+
+```bash
+pnpm run app          # roda em desenvolvimento
+pnpm run app:build    # gera o instalador em dist-electron
+```
+
+O `server.js` do Stremio **não está no repositório**: é componente da Stremio, não coberto pela GPL-2.0 deste projeto, então redistribuí-lo não nos cabe. O `scripts/bundle-server.js` o copia de uma instalação local do Stremio na hora de empacotar — aponte outro caminho pela variável `STREMIO_SERVER`.
+
 ### 🐳 Docker
 
 ```bash

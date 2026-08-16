@@ -6,14 +6,42 @@
     "private": true,
     "license": "gpl-2.0",
     "packageManager": "pnpm@11.1.2",
+    "main": "electron/main.js",
     "scripts": {
         "start": "webpack serve --mode development",
         "start-prod": "webpack serve --mode production",
         "build": "webpack --mode production",
         "brand": "node scripts/render-brand.js",
+        "app": "node scripts/bundle-server.js && electron .",
+        "app:build": "webpack --mode production && node scripts/bundle-server.js && electron-builder",
         "test": "jest",
         "lint": "eslint src",
         "scan-translations": "pnpx jest ./tests/i18nScan.test.js"
+    },
+    "build": {
+        "appId": "com.disclaw.app",
+        "productName": "Disclaw",
+        "directories": {
+            "output": "dist-electron"
+        },
+        "files": [
+            "electron/**/*",
+            "build/**/*",
+            "package.json"
+        ],
+        "win": {
+            "target": "nsis",
+            "icon": "assets/favicons/favicon.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true
+        },
+        "linux": {
+            "target": "AppImage",
+            "category": "AudioVideo",
+            "icon": "assets/images/icon_512x512.png"
+        }
     },
     "engines": {
         "node": ">=22",
@@ -72,6 +100,8 @@
         "css-loader": "6.11.0",
         "cssnano": "7.1.9",
         "cssnano-preset-advanced": "7.0.16",
+        "electron": "^43.4.0",
+        "electron-builder": "^26.15.3",
         "eslint": "^9.39.4",
         "eslint-plugin-react": "^7.37.5",
         "globals": "^15.15.0",
