@@ -16,6 +16,11 @@ const fs = require('fs');
 const path = require('path');
 
 const STREAMING_SERVER = 'http://127.0.0.1:11470';
+
+// Fixed, because the origin is the identity under which the browser keeps
+// local storage. A random port would hand the app a brand new, empty profile
+// on every launch — no login, no addons, no library.
+const UI_PORT = 11471;
 const BUILD_DIR = path.join(__dirname, '..', 'build');
 const SERVER_SCRIPT = path.join(__dirname, 'server.js');
 
@@ -35,7 +40,7 @@ const MIME = {
 };
 
 let streamingServer = null;
-let window = null;
+let mainWindow = null;
 
 // The app is served over http rather than file:// because the core is a
 // WebAssembly module running in a worker, and file:// origins cannot load it.
@@ -52,10 +57,30 @@ const serveUI = () => new Promise((resolve) => {
         fs.createReadStream(file).pipe(res);
     });
 
-    server.listen(0, '127.0.0.1', () => resolve(`http://127.0.0.1:${server.address().port}`));
+    server.listen(UI_PORT, '127.0.0.1', () => resolve(`http://127.0.0.1:${UI_PORT}`));
 });
 
-const startStreamingServer = () => {
+const isServerUp = () => new Promise((resolve) => {
+    const request = http.get(`${STREAMING_SERVER}/settings`, (res) => {
+        res.resume();
+        resolve(res.statusCode === 200);
+    });
+    request.on('error', () => resolve(false));
+    request.setTimeout(2000, () => {
+        request.destroy();
+        resolve(false);
+    });
+});
+
+const startStreamingServer = async () => {
+    // Something is already serving 11470 — Stremio itself, or an instance of
+    // this app still shutting down. Starting a second one only loses the race
+    // for the port and leaves the app quietly without a server.
+    if (await isServerUp()) {
+        console.log('Streaming server already running — reusing it.');
+        return;
+    }
+
     if (!fs.existsSync(SERVER_SCRIPT)) {
         console.error(`Streaming server missing at ${SERVER_SCRIPT} — torrents will not play. See README.`);
         return;
@@ -70,6 +95,10 @@ const startStreamingServer = () => {
     });
 
     streamingServer.on('error', (error) => console.error('Streaming server failed to start:', error));
+    streamingServer.on('exit', (code) => {
+        streamingServer = null;
+        if (code !== 0) console.error(`Streaming server exited with code ${code} — torrents will not play.`);
+    });
 };
 
 // Narrow on purpose: only responses from the streaming server are touched, and
@@ -92,7 +121,7 @@ const createWindow = async () => {
     const origin = await serveUI();
     allowStreamingServer(origin);
 
-    window = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 1400,
         height: 860,
         minWidth: 800,
@@ -106,23 +135,66 @@ const createWindow = async () => {
         },
     });
 
-    window.loadURL(origin);
+    mainWindow.loadURL(origin);
+
+    // DISCLAW_DEBUG=1 mirrors the renderer's console into this process's stdout
+    // and reports whether it can actually reach the streaming server, which is
+    // otherwise invisible from outside the app window.
+    if (process.env.DISCLAW_DEBUG) {
+        mainWindow.webContents.on('console-message', (_event, level, message) => {
+            console.log(`[renderer:${level}] ${message}`);
+        });
+
+        mainWindow.webContents.once('did-finish-load', async () => {
+            const probe = await mainWindow.webContents.executeJavaScript(`
+                fetch('${STREAMING_SERVER}/settings')
+                    .then((r) => 'OK ' + r.status)
+                    .catch((e) => 'FAIL ' + e.message)
+            `);
+            console.log(`[probe] origin=${origin} streaming-server=${probe}`);
+
+            // What the app itself concluded, which is what actually decides
+            // whether a torrent can be played.
+            setTimeout(async () => {
+                const state = await mainWindow.webContents.executeJavaScript(`
+                    JSON.stringify({
+                        avisoDeServidorVisivel: document.body.innerText.toLowerCase().includes('streaming server') || document.body.innerText.toLowerCase().includes('servidor de streaming'),
+                        urlDoServidorNoPerfil: (JSON.parse(localStorage.getItem('profile') || '{}').settings || {}).streamingServerUrl,
+                        addons: (JSON.parse(localStorage.getItem('profile') || '{}').addons || []).map((a) => a.manifest.name)
+                    })
+                `);
+                console.log(`[state] ${state}`);
+            }, 12000);
+        });
+    }
 
     // Anything that is not the app itself belongs in the real browser.
-    window.webContents.setWindowOpenHandler(({ url }) => {
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
         if (!url.startsWith(origin)) shell.openExternal(url);
         return { action: 'deny' };
     });
 };
 
-app.whenReady().then(() => {
-    startStreamingServer();
-    createWindow();
-
-    app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+// Two copies would fight over both ports, and the loser ends up without a
+// streaming server while still looking perfectly fine.
+if (!app.requestSingleInstanceLock()) {
+    app.quit();
+} else {
+    app.on('second-instance', () => {
+        if (mainWindow === null) return;
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.focus();
     });
-});
+
+    app.whenReady().then(async () => {
+        await startStreamingServer();
+        createWindow();
+
+        app.on('activate', () => {
+            if (BrowserWindow.getAllWindows().length === 0) createWindow();
+        });
+    });
+}
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();

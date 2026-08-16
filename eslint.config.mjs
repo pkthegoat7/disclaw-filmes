@@ -5,6 +5,10 @@ import pluginReact from 'eslint-plugin-react';
 import stylistic from '@stylistic/eslint-plugin';
 
 export default [
+    {
+        // Stremio's streaming server, vendored as-is for the desktop app.
+        ignores: ['electron/server.js'],
+    },
     pluginJs.configs.recommended,
     ...tseslint.configs.recommended,
     ...tseslint.configs.stylistic,
@@ -97,6 +101,17 @@ export default [
     {
         rules: {
             'react/display-name': 'off',
+        }
+    },
+    {
+        // The Electron main process is plain Node: no DOM, and its console
+        // output is how the app reports on itself when something goes wrong.
+        files: ['electron/**/*.js', 'scripts/**/*.js'],
+        languageOptions: {
+            globals: globals.node,
+        },
+        rules: {
+            'no-console': 'off',
         }
     }
 ];
