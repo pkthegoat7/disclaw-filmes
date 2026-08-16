@@ -102,16 +102,31 @@ const startStreamingServer = async () => {
 };
 
 // Narrow on purpose: only responses from the streaming server are touched, and
-// only to add the header it withholds. Disabling web security wholesale would
+// only to set the headers it withholds. Disabling web security wholesale would
 // have been fewer lines and far more of a hole.
+const CORS_HEADERS = {
+    'access-control-allow-origin': null, // filled in with the app's own origin
+    'access-control-allow-headers': ['*'],
+    'access-control-allow-methods': ['GET, POST, OPTIONS'],
+};
+
 const allowStreamingServer = (origin) => {
     session.defaultSession.webRequest.onHeadersReceived({ urls: [`${STREAMING_SERVER}/*`] }, (details, callback) => {
+        // The server already sends Access-Control-Allow-Origin on some routes,
+        // capitalised. Header names are case-insensitive to the browser but not
+        // to an object key, so adding ours alongside produced "*, http://…" —
+        // two values in one header, which the browser rejects outright. Drop
+        // every casing of the ones being set before setting them.
+        const responseHeaders = Object.fromEntries(
+            Object.entries(details.responseHeaders ?? {})
+                .filter(([name]) => !(name.toLowerCase() in CORS_HEADERS))
+        );
+
         callback({
             responseHeaders: {
-                ...details.responseHeaders,
+                ...responseHeaders,
+                ...CORS_HEADERS,
                 'access-control-allow-origin': [origin],
-                'access-control-allow-headers': ['*'],
-                'access-control-allow-methods': ['GET, POST, OPTIONS'],
             },
         });
     });
@@ -152,6 +167,18 @@ const createWindow = async () => {
                     .catch((e) => 'FAIL ' + e.message)
             `);
             console.log(`[probe] origin=${origin} streaming-server=${probe}`);
+
+            // DISCLAW_DEBUG_SCRIPT runs a file inside the app, which is the
+            // only way to exercise the player from outside the window.
+            if (process.env.DISCLAW_DEBUG_SCRIPT) {
+                try {
+                    const source = fs.readFileSync(process.env.DISCLAW_DEBUG_SCRIPT, 'utf8');
+                    const result = await mainWindow.webContents.executeJavaScript(source);
+                    console.log(`[script] ${result}`);
+                } catch (error) {
+                    console.error('[script] failed:', error.message);
+                }
+            }
 
             // What the app itself concluded, which is what actually decides
             // whether a torrent can be played.
